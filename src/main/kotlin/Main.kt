@@ -20,10 +20,19 @@ fun main() {
         "altstevenson",
         "altterra"
     )
+
+
     for (i in locations) {
         println(i)
-        getDiningHours(i)
+        if (i == "altnine" || i=="altcsdh" || i=="altcmdh" || i=="altpdh" || i=="altrodh") {
+            getDiningHours(i)
+        } else {
+            getNonDiningHours(i)
+        }
     }
+
+
+    getNonDiningHours("altoakes")
 }
 
 fun getDiningHours(location: String) {
@@ -47,7 +56,6 @@ fun getDiningHours(location: String) {
         for (i in daysList.indices) {
             println(daysList[i])
             println(hoursList[i])
-            println()
         }
     } else {
         println("${daysList.size} ${hoursList.size}")
@@ -55,4 +63,17 @@ fun getDiningHours(location: String) {
 }
 
 fun getNonDiningHours(location: String) {
+    val page = Jsoup.connect("https://dining.ucsc.edu/eat/").get()
+    val hours = page.select("div#${location} > table > tbody > tr > td")
+
+    val hoursList = mutableListOf<String>()
+    if (hours.size % 2 == 0) {
+        val hoursRemovedPatterns = Regex("<td>|</td>")
+        for (i in 0..<hours.size step 2) {
+            hoursList.add("${hours[i].toString().replace(hoursRemovedPatterns,"")}: ${hours[i+1].toString().replace(hoursRemovedPatterns,"")}")
+        }
+    } else {
+        println("error: hours list changed syntax")
+    }
+    println(hoursList)
 }
