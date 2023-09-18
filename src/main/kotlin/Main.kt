@@ -44,12 +44,10 @@ fun getDiningHours(location: String) {
     val daysList = days.map { it.toString().replace(daysRemovedPatterns, "") }
 
     val hours = page.select("div#${location} > ul")
-    val hoursList = mutableListOf<List<String>>()
-    for (i in hours) {
+    val hoursRemovedPattern = Regex("<li>|</li>| \\(limited entree options\\)\\*")
+    val hoursList = hours.map { i ->
         val items = i.select("li")
-        val hoursRemovedPatterns = Regex("<li>|</li>| \\(limited entree options\\)\\*")
-        val itemsList = items.map { it.toString().replace(hoursRemovedPatterns, "") }
-        hoursList.add(itemsList)
+        items.map { it.toString().replace(hoursRemovedPattern, "") }
     }
 
     if (daysList.size == hoursList.size) {
